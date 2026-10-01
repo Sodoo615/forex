@@ -160,6 +160,17 @@ const en = {
     body: "The page you are looking for does not exist.",
     backHome: "Back to home",
   },
+  time: {
+    justNow: "just now",
+    minutesAgo: "{n}m ago",
+    hoursAgo: "{n}h ago",
+    daysAgo: "{n}d ago",
+  },
+  language: {
+    en: "English",
+    mn: "Монгол",
+    toggle: "Switch language",
+  },
 };
 
 export type Dictionary = typeof en;
@@ -329,6 +340,17 @@ const mn: Dictionary = {
     title: "Хуудас олдсонгүй",
     body: "Таны хайж буй хуудас байхгүй байна.",
     backHome: "Нүүр хуудас руу буцах",
+  },
+  time: {
+    justNow: "саяхан",
+    minutesAgo: "{n} мин өмнө",
+    hoursAgo: "{n} цаг өмнө",
+    daysAgo: "{n} хоног өмнө",
+  },
+  language: {
+    en: "English",
+    mn: "Монгол",
+    toggle: "Хэл солих",
   },
 };
 

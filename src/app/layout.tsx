@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { LanguageProvider } from "@/lib/i18n/language-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     "Real-time forex news, economic calendar, market overview and currency analysis for traders.",
 };
 
-const themeInit = `(function(){try{var t=localStorage.getItem("fn-theme");if(t==="light"){document.documentElement.classList.remove("dark")}else{document.documentElement.classList.add("dark")}}catch(e){document.documentElement.classList.add("dark")}})();`;
+const themeInit = `(function(){try{var t=localStorage.getItem("fn-theme");if(t==="light"){document.documentElement.classList.remove("dark")}else{document.documentElement.classList.add("dark")}}catch(e){document.documentElement.classList.add("dark")}try{var l=localStorage.getItem("fn-lang");if(l==="mn"||l==="en"){document.documentElement.lang=l}}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -36,9 +37,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );

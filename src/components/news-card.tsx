@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import type { NewsArticle } from "@/lib/types";
 import { timeAgo } from "@/lib/utils";
+import { useLang } from "@/lib/i18n/language-context";
+import { localizeArticle } from "@/lib/i18n/content";
 
 const CATEGORY_STYLES: Record<NewsArticle["category"], string> = {
   Breaking: "bg-red-500/15 text-red-600 dark:text-red-400",
@@ -13,28 +17,30 @@ const CATEGORY_STYLES: Record<NewsArticle["category"], string> = {
 };
 
 export default function NewsCard({ article }: { article: NewsArticle }) {
+  const { lang, t } = useLang();
+  const localized = localizeArticle(article, lang);
   return (
     <article className="flex flex-col rounded-xl border border-border bg-surface p-5 transition-colors hover:border-brand/50">
       <div className="mb-2 flex items-center gap-2">
         <span
           className={`rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${CATEGORY_STYLES[article.category]}`}
         >
-          {article.category}
+          {t.news.categories[article.category]}
         </span>
         <span className="flex items-center gap-1 text-xs text-muted">
           <Clock size={12} />
-          {timeAgo(article.publishedAt)}
+          {timeAgo(article.publishedAt, t.time)}
         </span>
       </div>
       <h3 className="mb-1.5 leading-snug font-semibold">
         <Link href={`/news#${article.id}`} className="hover:text-brand">
-          {article.title}
+          {localized.title}
         </Link>
       </h3>
-      <p className="mb-3 flex-1 text-sm leading-relaxed text-muted">{article.summary}</p>
+      <p className="mb-3 flex-1 text-sm leading-relaxed text-muted">{localized.summary}</p>
       <div className="flex items-center justify-between text-xs text-muted">
         <span className="font-medium">{article.source}</span>
-        <span>{article.readMinutes} min read</span>
+        <span>{article.readMinutes} {t.news.minRead}</span>
       </div>
     </article>
   );

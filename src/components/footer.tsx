@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { TrendingUp } from "lucide-react";
+import { useLang } from "@/lib/i18n/language-context";
 
 export default function Footer() {
+  const { t } = useLang();
   return (
     <footer className="border-t border-border bg-surface">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -14,39 +18,32 @@ export default function Footer() {
               Forex<span className="text-brand">News</span>
             </span>
           </div>
-          <p className="text-sm text-muted">
-            Economic calendar, forex news and market data for traders. Built with
-            an API-ready architecture.
-          </p>
+          <p className="text-sm text-muted">{t.footer.tagline}</p>
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Product</h3>
+          <h3 className="mb-3 text-sm font-semibold">{t.footer.product}</h3>
           <ul className="space-y-2 text-sm text-muted">
-            <li><Link href="/calendar" className="hover:text-foreground">Economic Calendar</Link></li>
-            <li><Link href="/news" className="hover:text-foreground">Forex News</Link></li>
-            <li><Link href="/markets" className="hover:text-foreground">Market Overview</Link></li>
-            <li><Link href="/currencies" className="hover:text-foreground">Currencies</Link></li>
+            <li><Link href="/calendar" className="hover:text-foreground">{t.footer.economicCalendar}</Link></li>
+            <li><Link href="/news" className="hover:text-foreground">{t.footer.forexNews}</Link></li>
+            <li><Link href="/markets" className="hover:text-foreground">{t.footer.marketOverview}</Link></li>
+            <li><Link href="/currencies" className="hover:text-foreground">{t.footer.currencies}</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Resources</h3>
+          <h3 className="mb-3 text-sm font-semibold">{t.footer.resources}</h3>
           <ul className="space-y-2 text-sm text-muted">
-            <li><Link href="/news" className="hover:text-foreground">Market Analysis</Link></li>
-            <li><Link href="/settings" className="hover:text-foreground">Settings</Link></li>
-            <li><Link href="/event/evt-009" className="hover:text-foreground">Featured Event</Link></li>
+            <li><Link href="/news" className="hover:text-foreground">{t.footer.marketAnalysis}</Link></li>
+            <li><Link href="/settings" className="hover:text-foreground">{t.footer.settings}</Link></li>
+            <li><Link href="/event/evt-009" className="hover:text-foreground">{t.footer.featuredEvent}</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Risk Warning</h3>
-          <p className="text-xs leading-relaxed text-muted">
-            Trading foreign exchange on margin carries a high level of risk and may
-            not be suitable for all investors. Past performance is not indicative of
-            future results. All data shown is for informational purposes only.
-          </p>
+          <h3 className="mb-3 text-sm font-semibold">{t.footer.riskWarningTitle}</h3>
+          <p className="text-xs leading-relaxed text-muted">{t.footer.riskWarningBody}</p>
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-xs text-muted">
-        © {new Date().getFullYear()} Forex News. All rights reserved.
+        © {new Date().getFullYear()} {t.footer.rights}
       </div>
     </footer>
   );

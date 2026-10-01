@@ -5,18 +5,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Moon, Search, Sun, TrendingUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/news", label: "News" },
-  { href: "/markets", label: "Markets" },
-  { href: "/currencies", label: "Currencies" },
-];
+import { useLang } from "@/lib/i18n/language-context";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dark, setDark] = useState(
@@ -24,6 +18,14 @@ export default function Header() {
       typeof document === "undefined" ||
       document.documentElement.classList.contains("dark")
   );
+
+  const NAV = [
+    { href: "/", label: t.nav.home },
+    { href: "/calendar", label: t.nav.calendar },
+    { href: "/news", label: t.nav.news },
+    { href: "/markets", label: t.nav.markets },
+    { href: "/currencies", label: t.nav.currencies },
+  ];
 
   function toggleTheme() {
     const next = !dark;
@@ -87,23 +89,48 @@ export default function Header() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search news…"
+              placeholder={t.header.searchPlaceholder}
               className="h-8 w-full rounded-md border border-border bg-surface-2 pl-8 pr-3 text-sm outline-none placeholder:text-muted focus:border-brand"
             />
           </div>
         </form>
 
+        <div
+          className="ml-auto flex items-center gap-0.5 rounded-md border border-border p-0.5 text-xs font-semibold sm:ml-0"
+          role="group"
+          aria-label={t.language.toggle}
+        >
+          <button
+            onClick={() => setLang("en")}
+            className={cn(
+              "rounded px-1.5 py-1 transition-colors",
+              lang === "en" ? "bg-brand text-white" : "text-muted hover:text-foreground"
+            )}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => setLang("mn")}
+            className={cn(
+              "rounded px-1.5 py-1 transition-colors",
+              lang === "mn" ? "bg-brand text-white" : "text-muted hover:text-foreground"
+            )}
+          >
+            MN
+          </button>
+        </div>
+
         <button
           onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="ml-auto flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-foreground sm:ml-0"
+          aria-label={t.header.toggleTheme}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:text-foreground"
         >
           {dark ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
         <button
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={t.header.toggleMenu}
           className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted md:hidden"
         >
           {menuOpen ? <X size={16} /> : <Menu size={16} />}
@@ -121,7 +148,7 @@ export default function Header() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search news…"
+                placeholder={t.header.searchPlaceholder}
                 className="h-9 w-full rounded-md border border-border bg-surface-2 pl-8 pr-3 text-sm outline-none placeholder:text-muted focus:border-brand"
               />
             </div>

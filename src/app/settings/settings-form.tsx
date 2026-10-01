@@ -4,13 +4,9 @@ import { useState } from "react";
 import { Check, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocalStorageValue } from "@/lib/use-local-storage";
+import { useLang } from "@/lib/i18n/language-context";
 
 const TIMEZONES = ["UTC", "America/New_York", "Europe/London", "Europe/Berlin", "Asia/Tokyo", "Australia/Sydney"];
-const IMPACTS = [
-  { value: "all", label: "Show all events" },
-  { value: "high", label: "High impact only" },
-  { value: "medium", label: "Medium and above" },
-];
 const CURRENCIES = ["USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "NZD"];
 
 function parseFavorites(raw: string | null): string[] {
@@ -24,6 +20,12 @@ function parseFavorites(raw: string | null): string[] {
 }
 
 export default function SettingsForm() {
+  const { lang, setLang, t } = useLang();
+  const IMPACTS = [
+    { value: "all", label: t.settings.showAll },
+    { value: "high", label: t.settings.highOnly },
+    { value: "medium", label: t.settings.mediumAbove },
+  ];
   const storedTheme = useLocalStorageValue("fn-theme");
   const storedTz = useLocalStorageValue("fn-timezone");
   const storedImpact = useLocalStorageValue("fn-impact");
@@ -68,15 +70,44 @@ export default function SettingsForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div>
+      <h1 className="mb-1 text-2xl font-bold tracking-tight sm:text-3xl">{t.settings.title}</h1>
+      <p className="mb-6 text-muted">{t.settings.subtitle}</p>
+      <div className="space-y-6">
       <section className="rounded-xl border border-border bg-surface p-6">
-        <h2 className="mb-1 font-semibold">Appearance</h2>
-        <p className="mb-4 text-sm text-muted">Choose between light and dark mode.</p>
+        <h2 className="mb-1 font-semibold">{t.settings.language}</h2>
+        <p className="mb-4 text-sm text-muted">{t.settings.languageDesc}</p>
         <div className="flex gap-2">
           {(
             [
-              { value: "light", label: "Light", icon: Sun },
-              { value: "dark", label: "Dark", icon: Moon },
+              { value: "en", label: t.language.en },
+              { value: "mn", label: t.language.mn },
+            ] as const
+          ).map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setLang(value)}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                lang === value
+                  ? "border-brand bg-brand/10 text-brand"
+                  : "border-border text-muted hover:text-foreground"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-border bg-surface p-6">
+        <h2 className="mb-1 font-semibold">{t.settings.appearance}</h2>
+        <p className="mb-4 text-sm text-muted">{t.settings.appearanceDesc}</p>
+        <div className="flex gap-2">
+          {(
+            [
+              { value: "light", label: t.settings.light, icon: Sun },
+              { value: "dark", label: t.settings.dark, icon: Moon },
             ] as const
           ).map(({ value, label, icon: Icon }) => (
             <button
@@ -96,9 +127,9 @@ export default function SettingsForm() {
       </section>
 
       <section className="rounded-xl border border-border bg-surface p-6">
-        <h2 className="mb-1 font-semibold">Timezone</h2>
+        <h2 className="mb-1 font-semibold">{t.settings.timezone}</h2>
         <p className="mb-4 text-sm text-muted">
-          Used to display event times across the calendar.
+          {t.settings.timezoneDesc}
         </p>
         <select
           value={timeZone}
@@ -114,9 +145,9 @@ export default function SettingsForm() {
       </section>
 
       <section className="rounded-xl border border-border bg-surface p-6">
-        <h2 className="mb-1 font-semibold">Default Impact Filter</h2>
+        <h2 className="mb-1 font-semibold">{t.settings.defaultImpact}</h2>
         <p className="mb-4 text-sm text-muted">
-          Applied automatically when you open the calendar.
+          {t.settings.defaultImpactDesc}
         </p>
         <div className="flex flex-col gap-2">
           {IMPACTS.map((i) => (
@@ -136,8 +167,8 @@ export default function SettingsForm() {
       </section>
 
       <section className="rounded-xl border border-border bg-surface p-6">
-        <h2 className="mb-1 font-semibold">Favorite Currencies</h2>
-        <p className="mb-4 text-sm text-muted">Highlight the currencies you trade most.</p>
+        <h2 className="mb-1 font-semibold">{t.settings.favorites}</h2>
+        <p className="mb-4 text-sm text-muted">{t.settings.favoritesDesc}</p>
         <div className="flex flex-wrap gap-2">
           {CURRENCIES.map((c) => (
             <button
@@ -161,13 +192,14 @@ export default function SettingsForm() {
           onClick={save}
           className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
         >
-          Save preferences
+          {t.settings.save}
         </button>
         {saved && (
           <span className="flex items-center gap-1 text-sm font-medium text-up">
-            <Check size={15} /> Saved
+            <Check size={15} /> {t.settings.saved}
           </span>
         )}
+      </div>
       </div>
     </div>
   );

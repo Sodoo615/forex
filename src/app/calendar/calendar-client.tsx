@@ -7,14 +7,8 @@ import type { EconomicEvent, Impact } from "@/lib/types";
 import { cn, formatDayLabel, formatEventTime, utcDayKey } from "@/lib/utils";
 import { useLocalStorageValue } from "@/lib/use-local-storage";
 import ImpactBadge from "@/components/impact-badge";
-
-const IMPACT_FILTERS: { value: Impact | "all"; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "high", label: "High" },
-  { value: "medium", label: "Medium" },
-  { value: "low", label: "Low" },
-  { value: "holiday", label: "Holiday" },
-];
+import { useLang } from "@/lib/i18n/language-context";
+import { localizeEvent } from "@/lib/i18n/content";
 
 const TIMEZONES = ["UTC", "America/New_York", "Europe/London", "Europe/Berlin", "Asia/Tokyo", "Australia/Sydney"];
 
@@ -25,6 +19,14 @@ export default function CalendarClient({
   events: EconomicEvent[];
   days: string[];
 }) {
+  const { lang, t } = useLang();
+  const IMPACT_FILTERS: { value: Impact | "all"; label: string }[] = [
+    { value: "all", label: t.calendar.all },
+    { value: "high", label: t.calendar.high },
+    { value: "medium", label: t.calendar.medium },
+    { value: "low", label: t.calendar.low },
+    { value: "holiday", label: t.calendar.holiday },
+  ];
   const today = utcDayKey(0);
   const initialIndex = Math.max(0, days.indexOf(today));
   const [dayIndex, setDayIndex] = useState(initialIndex);
@@ -49,33 +51,37 @@ export default function CalendarClient({
   );
 
   const dayKey = days[dayIndex] ?? today;
-  const dayEvents = events.filter(
-    (e) =>
-      e.date.slice(0, 10) === dayKey &&
-      (impact === "all" || e.impact === impact) &&
-      (currency === "all" || e.currency === currency)
-  );
+  const dayEvents = events
+    .filter(
+      (e) =>
+        e.date.slice(0, 10) === dayKey &&
+        (impact === "all" || e.impact === impact) &&
+        (currency === "all" || e.currency === currency)
+    )
+    .map((e) => localizeEvent(e, lang));
 
   return (
     <div>
+      <h1 className="mb-1 text-2xl font-bold tracking-tight sm:text-3xl">{t.calendar.title}</h1>
+      <p className="mb-6 text-muted">{t.calendar.subtitle}</p>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
           <button
             onClick={() => setDayIndex((i) => Math.max(0, i - 1))}
             disabled={dayIndex === 0}
-            aria-label="Previous day"
+            aria-label={t.calendar.prevDay}
             className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-foreground disabled:opacity-40"
           >
             <ChevronLeft size={16} />
           </button>
           <span className="min-w-28 text-center text-sm font-semibold">
-            {formatDayLabel(dayKey)}
-            {dayKey === today && <span className="ml-2 text-xs font-medium text-brand">Today</span>}
+            {formatDayLabel(dayKey, lang)}
+            {dayKey === today && <span className="ml-2 text-xs font-medium text-brand">{t.calendar.today}</span>}
           </span>
           <button
             onClick={() => setDayIndex((i) => Math.min(days.length - 1, i + 1))}
             disabled={dayIndex >= days.length - 1}
-            aria-label="Next day"
+            aria-label={t.calendar.nextDay}
             className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-foreground disabled:opacity-40"
           >
             <ChevronRight size={16} />
@@ -104,7 +110,7 @@ export default function CalendarClient({
           onChange={(e) => setCurrency(e.target.value)}
           className="h-10 rounded-lg border border-border bg-surface px-3 text-sm outline-none focus:border-brand"
         >
-          <option value="all">All currencies</option>
+          <option value="all">{t.calendar.allCurrencies}</option>
           {currencies.map((c) => (
             <option key={c} value={c}>
               {c}
@@ -116,7 +122,7 @@ export default function CalendarClient({
           value={timeZone}
           onChange={(e) => setTzOverride(e.target.value)}
           className="h-10 rounded-lg border border-border bg-surface px-3 text-sm outline-none focus:border-brand"
-          aria-label="Timezone"
+          aria-label={t.calendar.timezone}
         >
           {TIMEZONES.map((tz) => (
             <option key={tz} value={tz}>
@@ -128,18 +134,18 @@ export default function CalendarClient({
 
       <div className="overflow-hidden rounded-xl border border-border bg-surface">
         <div className="hidden grid-cols-[90px_70px_90px_1fr_80px_80px_80px] gap-3 border-b border-border bg-surface-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted md:grid">
-          <span>Time</span>
-          <span>Cur</span>
-          <span>Impact</span>
-          <span>Event</span>
-          <span className="text-right">Actual</span>
-          <span className="text-right">Forecast</span>
-          <span className="text-right">Previous</span>
+          <span>{t.calendar.time}</span>
+          <span>{t.calendar.cur}</span>
+          <span>{t.calendar.impact}</span>
+          <span>{t.calendar.event}</span>
+          <span className="text-right">{t.calendar.actual}</span>
+          <span className="text-right">{t.calendar.forecast}</span>
+          <span className="text-right">{t.calendar.previous}</span>
         </div>
         {dayEvents.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-16 text-muted">
             <CalendarOff size={28} />
-            <p className="text-sm">No events match your filters for this day.</p>
+            <p className="text-sm">{t.calendar.noEvents}</p>
           </div>
         ) : (
           dayEvents.map((e) => (
@@ -149,7 +155,7 @@ export default function CalendarClient({
               className="grid grid-cols-2 gap-2 border-b border-border px-4 py-3 transition-colors last:border-0 hover:bg-surface-2 md:grid-cols-[90px_70px_90px_1fr_80px_80px_80px] md:items-center md:gap-3"
             >
               <span className="text-sm font-medium tabular-nums">
-                {formatEventTime(e.date, timeZone)}
+                {formatEventTime(e.date, timeZone, lang)}
               </span>
               <span className="text-sm font-semibold">{e.currency}</span>
               <span>
